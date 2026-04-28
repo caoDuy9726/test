@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thế Giới Di Động</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f5f5f5}
+
+/* HEADER */
+.header{background:#ffd400;padding:10px 20px;display:flex;align-items:center;gap:20px}
+.logo img{height:40px;cursor:pointer}
+.search{flex:1}
+.search input{width:100%;padding:10px;border-radius:20px;border:none}
+.cart-btn{font-weight:bold;cursor:pointer;position:relative}
+.revenue-btn{font-weight:bold;cursor:pointer;padding:8px 15px;background:#e60000;color:#fff;border-radius:5px;margin-left:10px}
+.revenue-btn:hover{background:#cc0000}
+.cart-count{position:absolute;top:-8px;right:-10px;background:red;color:#fff;border-radius:50%;width:20px;height:20px;font-size:12px;display:flex;align-items:center;justify-content:center}
+
+/* MENU */
+.menu{background:#fff;padding:10px 20px;display:flex;gap:20px;font-weight:bold;border-bottom:1px solid #ddd;flex-wrap:wrap;align-items:center}
+.menu div{cursor:pointer;padding:5px 10px;border-radius:5px}
+.menu div.active{background:#ffd400}
+.filter-group{display:flex;align-items:center;gap:5px}
+.filter-group label{font-weight:normal;font-size:13px}
+.filter-group select{padding:5px 10px;border:1px solid #ddd;border-radius:5px;cursor:pointer}
+
+.banner{background:#e60000;color:#fff;text-align:center;padding:20px;font-size:22px}
+
+.container{padding:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+
+.card{background:#fff;border-radius:12px;padding:10px;transition:.2s;cursor:pointer;position:relative}
+.card:hover{transform:translateY(-5px)}
+.card img{width:100%;height:160px;object-fit:cover}
+.badge{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:3px 6px;font-size:12px;border-radius:5px}
+.name{font-weight:bold;margin:5px 0}
+.price{color:red;font-weight:bold}
+.old-price{text-decoration:line-through;color:#888;font-size:13px}
+
+button{width:100%;padding:8px;margin-top:5px;border:none;background:#ffd400;cursor:pointer}
+
+.cart-panel{position:fixed;right:-380px;top:0;width:380px;height:100%;background:#fff;padding:20px;transition:.3s;overflow:auto;box-shadow:-5px 0 20px rgba(0,0,0,0.1);z-index:1000}
+.cart-panel.open{right:0}
+.cart-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;border-bottom:1px solid #eee;margin-bottom:15px}
+.cart-header h3{margin:0;color:#333}
+.close-cart{background:none;border:none;font-size:24px;cursor:pointer;color:#666}
+.cart-item{display:flex;gap:15px;padding:15px 0;border-bottom:1px solid #f0f0f0;align-items:center}
+.cart-item img{width:70px;height:70px;object-fit:cover;border-radius:8px}
+.cart-item-info{flex:1}
+.cart-item-name{font-weight:bold;font-size:14px;margin-bottom:5px}
+.cart-item-price{color:red;font-weight:bold}
+.cart-item-qty{display:flex;align-items:center;gap:10px;margin-top:8px}
+.qty-btn{width:28px;height:28px;border:1px solid #ddd;background:#fff;border-radius:5px;cursor:pointer;font-size:16px}
+.qty-btn:hover{background:#ffd400}
+.remove-btn{background:none;border:none;color:#999;cursor:pointer;font-size:20px}
+.remove-btn:hover{color:red}
+.cart-footer{border-top:1px solid #eee;padding-top:15px;margin-top:15px}
+.cart-total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin-bottom:15px}
+.cart-total span:last-child{color:red}
+.checkout-btn{background:#e60000;color:#fff;font-size:16px;padding:12px;border-radius:8px}
+.checkout-btn:hover{background:#cc0000}
+.empty-cart{text-align:center;padding:40px 0;color:#999}
+.empty-cart img{width:100px;opacity:0.5}
+.cart-panel.open{right:0}
+
+.detail{display:flex;gap:30px;padding:20px}
+.detail img{width:350px}
+.detail-info{flex:1}
+.detail-title{font-size:22px;font-weight:bold}
+.detail-price{color:red;font-size:24px;margin:10px 0}
+.spec{margin-top:10px;line-height:1.6}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo" onclick="goHome()">
+        <img src="https://cdn.tgdd.vn/mwgcart/mwg-site/ContentMwg/images/logo.png">
+    </div>
+    <div class="search">
+        <input placeholder="Bạn tìm gì hôm nay?" oninput="searchProduct(this.value)">
+    </div>
+    <div class="cart-btn" onclick="openCart()">
+    Giỏ hàng
+    <span class="cart-count" id="cartCount">0</span>
+</div>
+<div class="revenue-btn" onclick="openRevenue()">📊 Doanh thu</div>
+</div>
+
+<div class="menu">
+    <div class="filter-group">
+        <label>Danh mục:</label>
+        <select id="categoryFilter" onchange="filterProducts()">
+            <option value="all">Tất cả</option>
+            <option value="phone">Điện thoại</option>
+            <option value="laptop">Laptop</option>
+            <option value="accessory">Phụ kiện</option>
+            <option value="watch">Smartwatch</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Giá:</label>
+        <select id="priceFilter" onchange="filterProducts()">
+            <option value="all">Tất cả</option>
+            <option value="0-10000000">Dưới 10 triệu</option>
+            <option value="10000000-20000000">10-20 triệu</option>
+            <option value="20000000-30000000">20-30 triệu</option>
+            <option value="30000000-999999999">Trên 30 triệu</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Hãng:</label>
+        <select id="brandFilter" onchange="filterProducts()">
+            <option value="all">Tất cả</option>
+            <option value="Apple">Apple</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Xiaomi">Xiaomi</option>
+        </select>
+    </div>
+    <button onclick="resetFilters()" style="width:auto;padding:5px 15px;">Xóa lọc</button>
+</div>
+
+<div class="banner">🔥 Ngàn Deal Dưa Nổ - Giảm đến 50% 🔥</div>
+
+<div class="container">
+    <div id="productList" class="grid"></div>
+</div>
+
+<div id="cart" class="cart-panel"></div>
+<div id="revenuePanel" class="cart-panel"></div>
+
+<script>
+const products=[
+{id:1,name:"iPhone 13 Pro Max 128GB",price:28990000,old:30990000,img:"https://images.unsplash.com/photo-1603791440384-56cd371ee9a7",category:"phone",brand:"Apple"},
+{id:2,name:"Samsung Galaxy S23 Ultra",price:26990000,old:29990000,img:"https://images.unsplash.com/photo-1678911820864-e7f3b2c1f9d4",category:"phone",brand:"Samsung"},
+{id:3,name:"Xiaomi Redmi Note 12",price:7990000,old:8990000,img:"https://images.unsplash.com/photo-1580910051074-3eb694886505",category:"phone",brand:"Xiaomi"},
+{id:4,name:"iPhone 11 64GB",price:10990000,old:12990000,img:"https://images.unsplash.com/photo-1598327105666-5b89351aff97",category:"phone",brand:"Apple"},
+{id:5,name:"MacBook Pro M2",price:32990000,old:35990000,img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8",category:"laptop",brand:"Apple"},
+{id:6,name:"Samsung Galaxy Watch 5",price:6990000,old:7990000,img:"https://images.unsplash.com/photo-1579586337278-3befd40fd17a",category:"watch",brand:"Samsung"},
+{id:7,name:"AirPods Pro 2",price:4990000,old:5990000,img:"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46",category:"accessory",brand:"Apple"},
+{id:8,name:"Xiaomi Mi Band 7",price:1990000,old:2990000,img:"https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6",category:"watch",brand:"Xiaomi"}
+];
+
+let cart=[];
+let cartData={};
+
+function updateCartCount(){
+    let count=Object.values(cartData).reduce((a,b)=>a+b.qty,0);
+    document.getElementById("cartCount").textContent=count;
+}
+
+function addToCart(id){
+    let p=products.find(x=>x.id==id);
+    if(cartData[id]){
+        cartData[id].qty++;
+    }else{
+        cartData[id]={...p,qty:1};
+    }
+    updateCartCount();
+    renderCart();
+    showToast(`Đã thêm ${p.name} vào giỏ hàng`);
+}
+
+function removeFromCart(id){
+    delete cartData[id];
+    updateCartCount();
+    renderCart();
+}
+
+function updateQty(id,delta){
+    if(cartData[id]){
+        cartData[id].qty+=delta;
+        if(cartData[id].qty<=0){
+            removeFromCart(id);
+        }else{
+            updateCartCount();
+            renderCart();
+        }
+    }
+}
+
+function renderCart(){
+    let items=Object.values(cartData);
+    let total=0;
+    let html="";
+    
+    if(items.length===0){
+        html=`<div class="empty-cart">
+            <div style="font-size:50px;">🛒</div>
+            <p>Giỏ hàng trống</p>
+            <button onclick="closeCart()" style="width:auto;padding:10px 20px;">Tiếp tục mua sắm</button>
+        </div>`;
+    }else{
+        html=`<div class="cart-header">
+            <h3>Giỏ hàng (${items.length} sản phẩm)</h3>
+            <button class="close-cart" onclick="closeCart()">×</button>
+        </div>`;
+        items.forEach(p=>{
+            total+=p.price*p.qty;
+            html+=`<div class="cart-item">
+                <img src="${p.img}">
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${p.name}</div>
+                    <div class="cart-item-price">${p.price.toLocaleString()}đ</div>
+                    <div class="cart-item-qty">
+                        <button class="qty-btn" onclick="updateQty(${p.id},-1)">-</button>
+                        <span>${p.qty}</span>
+                        <button class="qty-btn" onclick="updateQty(${p.id},1)">+</button>
+                    </div>
+                </div>
+                <button class="remove-btn" onclick="removeFromCart(${p.id})">🗑</button>
+            </div>`;
+        });
+        html+=`<div class="cart-footer">
+            <div class="cart-total">
+                <span>Tổng tiền:</span>
+                <span>${total.toLocaleString()}đ</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Thanh toán ngay</button>
+        </div>`;
+    }
+    document.getElementById("cart").innerHTML=html;
+}
+
+function checkout(){
+    let items=Object.values(cartData);
+    if(items.length===0){
+        alert("Giỏ hàng trống!");
+        return;
+    }
+    let total=items.reduce((sum,p)=>sum+p.price*p.qty,0);
+    let itemCount=items.reduce((sum,p)=>sum+p.qty,0);
+    let now=new Date();
+    let dateStr=now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear()+" "+now.getHours()+":"+String(now.getMinutes()).padStart(2,'0');
+    
+    // Save order for revenue tracking
+    orders.push({total:total,items:itemCount,date:dateStr});
+    
+    let msg="Đơn hàng của bạn:\n";
+    items.forEach(p=>{msg+=`- ${p.name} x${p.qty}: ${(p.price*p.qty).toLocaleString()}đ\n`});
+    msg+=`\nTổng: ${total.toLocaleString()}đ`;
+    alert(msg+"\n\n✅ Đơn hàng đã được lưu!\nCảm ơn bạn đã mua hàng!");
+    cartData={};
+    updateCartCount();
+    renderCart();
+    openCart();
+}
+
+function showToast(msg){
+    let toast=document.createElement("div");
+    toast.style.cssText="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:12px 24px;border-radius:25px;z-index:2000";
+    toast.textContent=msg;
+    document.body.appendChild(toast);
+    setTimeout(()=>{toast.remove()},2000);
+}
+
+// Revenue tracking
+let orders=[];
+
+function openRevenue(){
+    document.getElementById("cart").classList.remove("open");
+    document.getElementById("revenuePanel").classList.toggle("open");
+    renderRevenue();
+}
+
+function renderRevenue(){
+    let totalRevenue=orders.reduce((sum,o)=>sum+o.total,0);
+    let totalOrders=orders.length;
+    let totalItems=orders.reduce((sum,o)=>sum+o.items,0);
+    
+    let html=`<div class="cart-header">
+        <h3>📊 Doanh thu</h3>
+        <button class="close-cart" onclick="openRevenue()">×</button>
+    </div>`;
+    
+    html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">`;
+    html+=`<div style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:15px;border-radius:10px;text-align:center;">`;
+    html+=`<div style="font-size:24px;font-weight:bold;">${totalRevenue.toLocaleString()}đ</div>`;
+    html+=`<div style="font-size:12px;opacity:0.9;">Tổng doanh thu</div></div>`;
+    html+=`<div style="background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;padding:15px;border-radius:10px;text-align:center;">`;
+    html+=`<div style="font-size:24px;font-weight:bold;">${totalOrders}</div>`;
+    html+=`<div style="font-size:12px;opacity:0.9;">Đơn hàng</div></div>`;
+    html+=`<div style="background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;padding:15px;border-radius:10px;text-align:center;">`;
+    html+=`<div style="font-size:24px;font-weight:bold;">${totalItems}</div>`;
+    html+=`<div style="font-size:12px;opacity:0.9;">Sản phẩm</div></div></div>`;
+    
+    html+=`<h4 style="margin:15px 0 10px;">📋 Lịch sử đơn hàng</h4>`;
+    if(orders.length===0){
+        html+=`<div style="text-align:center;padding:30px;color:#999;">
+            <div style="font-size:40px;">📦</div>
+            <p>Chưa có đơn hàng nào</p>
+        </div>`;
+    }else{
+        orders.slice().reverse().forEach((o,i)=>{
+            html+=`<div style="background:#f9f9f9;padding:12px;border-radius:8px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;">
+                    <span>Đơn #${orders.length-i}</span>
+                    <span>${o.date}</span>
+                </div>
+                <div style="font-weight:bold;margin:5px 0;">${o.items} sản phẩm</div>
+                <div style="color:red;font-weight:bold;">${o.total.toLocaleString()}đ</div>
+            </div>`;
+        });
+    }
+    
+    if(totalOrders>0){
+        html+=`<button onclick="clearRevenue()" style="width:auto;padding:10px 20px;background:#666;color:#fff;margin-top:10px;">Xóa lịch sử</button>`;
+    }
+    
+    document.getElementById("revenuePanel").innerHTML=html;
+}
+
+function clearRevenue(){
+    if(confirm("Bạn có muốn xóa toàn bộ lịch sử doanh thu?")){
+        orders=[];
+        renderRevenue();
+    }
+}
+
+function renderProducts(list=products){
+let html="";
+list.forEach(p=>{
+html+=`<div class="card" onclick="viewDetail(${p.id})">
+<div class="badge">-10%</div>
+<img src="${p.img}">
+<div class="name">${p.name}</div>
+<div class="old-price">${p.old.toLocaleString()}đ</div>
+<div class="price">${p.price.toLocaleString()}đ</div>
+<button onclick="event.stopPropagation();addToCart(${p.id})">Thêm giỏ</button>
+</div>`;
+});
+document.getElementById("productList").innerHTML=html;
+}
+
+function addToCart(id){
+let p=products.find(x=>x.id==id);
+cart.push(p);
+renderCart();
+}
+
+function renderCart(){
+let total=0;
+let html="<h3>Giỏ hàng</h3>";
+cart.forEach(p=>{total+=p.price;html+=`<div>${p.name}<br>${p.price.toLocaleString()}đ</div><hr>`});
+html+=`<b>Tổng: ${total.toLocaleString()}đ</b><br><button>Thanh toán</button>`;
+document.getElementById("cart").innerHTML=html;
+}
+
+function openCart(){
+    document.getElementById("revenuePanel").classList.remove("open");
+    document.getElementById("cart").classList.toggle("open");
+}
+
+function closeCart(){
+    document.getElementById("cart").classList.remove("open");
+}
+
+function closeRevenue(){
+    document.getElementById("revenuePanel").classList.remove("open");
+}
+
+function goHome(){renderProducts()}
+
+function searchProduct(k){let list=products.filter(p=>p.name.toLowerCase().includes(k.toLowerCase()));renderProducts(list)}
+
+function filterProducts(){
+    let category=document.getElementById("categoryFilter").value;
+    let priceRange=document.getElementById("priceFilter").value;
+    let brand=document.getElementById("brandFilter").value;
+    let search=document.querySelector(".search input").value.toLowerCase();
+    
+    let list=products.filter(p=>{
+        let matchCategory=category==="all"||p.category===category;
+        let matchBrand=brand==="all"||p.brand===brand;
+        let matchSearch=p.name.toLowerCase().includes(search);
+        let matchPrice=true;
+        if(priceRange!=="all"){
+            let [min,max]=priceRange.split("-").map(Number);
+            matchPrice=p.price>=min&&p.price<=max;
+        }
+        return matchCategory&&matchBrand&&matchSearch&&matchPrice;
+    });
+    renderProducts(list);
+}
+
+function resetFilters(){
+    document.getElementById("categoryFilter").value="all";
+    document.getElementById("priceFilter").value="all";
+    document.getElementById("brandFilter").value="all";
+    document.querySelector(".search input").value="";
+    renderProducts(products);
+}
+
+function viewDetail(id){
+let p=products.find(x=>x.id==id);
+document.body.innerHTML=`
+<div class="header">
+    <div class="logo" onclick="location.reload()">
+        <img src="https://cdn.tgdd.vn/mwgcart/mwg-site/ContentMwg/images/logo.png">
+    </div>
+</div>
+<div class="detail">
+<img src="${p.img}">
+<div class="detail-info">
+<div class="detail-title">${p.name}</div>
+<div class="detail-price">${p.price.toLocaleString()}đ</div>
+<button onclick="addToCart(${p.id})">Thêm vào giỏ</button>
+<div class="spec">
+<b>Thông số kỹ thuật:</b><br>
+- Màn hình: 6.7 inch OLED<br>
+- Chip: Apple A15 / Snapdragon<br>
+- RAM: 6GB<br>
+- Bộ nhớ: 128GB<br>
+- Camera: 12MP / 108MP<br>
+- Pin: 4000mAh<br>
+- Hỗ trợ 5G, FaceID, sạc nhanh
+</div>
+</div>
+</div>`;
+}
+
+renderProducts();
+</script>
+
+</body>
+</html>

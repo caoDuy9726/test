@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SweetMart - Tiệm bánh ngọt</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #eef2f5;
+            color: #222;
+        }
+
+        .top-header {
+            background: #008848;
+            color: white;
+            padding: 14px 32px;
+            display: grid;
+            grid-template-columns: 220px 1fr 190px 120px;
+            align-items: center;
+            gap: 18px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffe600;
+        }
+
+        .logo span {
+            color: white;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 13px 18px;
+            border-radius: 24px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .location {
+            background: rgba(255, 255, 255, 0.18);
+            padding: 12px 14px;
+            border-radius: 24px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .cart-button {
+            border: none;
+            background: #006b39;
+            color: white;
+            padding: 11px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff2d55;
+            color: white;
+            min-width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .page {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 18px;
+            padding: 18px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            align-self: start;
+            position: sticky;
+            top: 84px;
+        }
+
+        .sidebar-title {
+            background: #006b39;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .category {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .category:hover {
+            background: #f5fff9;
+            color: #008848;
+        }
+
+        .main-content {
+            min-width: 0;
+        }
+
+        .quick-row {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .quick-item {
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            background: #fff8f8;
+            font-weight: bold;
+            color: #b8325c;
+        }
+
+        .banner {
+            background: linear-gradient(90deg, #fff3c4, #ffd7e2);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .banner h1 {
+            color: #ff6b00;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .banner button,
+        .revenue-floating {
+            border: none;
+            background: #ff6b00;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .section-title {
+            color: #ff6b00;
+            font-size: 24px;
+            margin: 18px 0 12px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f1f1;
+            transition: 0.18s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image {
+            height: 150px;
+            background: #fff1f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 68px;
+        }
+
+        .product-info {
+            padding: 14px;
+        }
+
+        .product-name {
+            color: #d81b60;
+            font-size: 17px;
+            min-height: 42px;
+            margin-bottom: 8px;
+        }
+
+        .price {
+            color: #0b77bd;
+            font-weight: 800;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .stock {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .product-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .add-btn,
+        .buy-btn {
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: #008848;
+            color: white;
+        }
+
+        .buy-btn {
+            background: #ff6b00;
+            color: white;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            display: none;
+            z-index: 40;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: -430px;
+            width: 420px;
+            max-width: 92vw;
+            height: 100vh;
+            background: white;
+            z-index: 50;
+            transition: 0.25s;
+            box-shadow: -6px 0 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 18px;
+            background: #008848;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .drawer-body {
+            padding: 16px;
+            overflow: auto;
+            flex: 1;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .cart-emoji {
+            font-size: 34px;
+            background: #fff1f5;
+            border-radius: 10px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .qty-controls button,
+        .remove-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 5px 9px;
+            cursor: pointer;
+        }
+
+        .qty-controls button {
+            background: #eaf7ef;
+            color: #008848;
+            font-weight: bold;
+        }
+
+        .remove-btn {
+            background: #f2f2f2;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .cart-total {
+            padding: 16px;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .final-row {
+            font-size: 20px;
+            font-weight: 800;
+            color: #d81b60;
+        }
+
+        .checkout-form {
+            margin-top: 12px;
+        }
+
+        .checkout-form input {
+            width: 100%;
+            margin-top: 8px;
+            padding: 11px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            margin-top: 12px;
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            background: #ff6b00;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 80;
+            padding: 16px;
+        }
+
+        .modal-content {
+            width: 520px;
+            max-width: 95vw;
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            color: #d81b60;
+            margin-bottom: 12px;
+        }
+
+        .invoice-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .modal-actions {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .secondary-btn {
+            border: none;
+            background: #f0f0f0;
+            color: #333;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .revenue-floating {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 15;
+            background: #0b77bd;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 980px) {
+            .top-header {
+                grid-template-columns: 1fr;
+            }
+
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .quick-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media print {
+    body {
+        margin: 0;
+    }
+
+    body * {
+        display: none;
+    }
+
+    #invoiceModal {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    #invoiceModal * {
+        display: block;
+    }
+
+    html, body {
+        height: auto;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <div class="logo">Sweet<span>Mart</span></div>
+        <div class="search-box">
+            <input id="searchInput" type="text" placeholder="Bạn tìm bánh gì hôm nay?" oninput="renderProducts()" />
+        </div>
+        <div class="location">📍 Giao gần bạn</div>
+        <button class="cart-button" onclick="openCart()">
+            🛒 Giỏ hàng
+            <span id="cartCount" class="cart-count">0</span>
+        </button>
+    </header>
+
+    <div class="page">
+        <aside class="sidebar">
+            <div class="sidebar-title">☰ DANH MỤC SẢN PHẨM</div>
+            <div class="category" onclick="filterCategory('all')">Tất cả <span>›</span></div>
+            <div class="category" onclick="filterCategory('cake')">Bánh kem <span>›</span></div>
+            <div class="category" onclick="filterCategory('pastry')">Bánh ngọt nhỏ <span>›</span></div>
+            <div class="category" onclick="filterCategory('drink')">Đồ uống <span>›</span></div>
+            <div class="category" onclick="filterCategory('combo')">Combo tiết kiệm <span>›</span></div>
+            <div class="category" onclick="filterCategory('hot')">Khuyến mãi sốc <span>›</span></div>
+        </aside>
+
+        <main class="main-content">
+            <div class="quick-row">
+                <div class="quick-item">⚡ Flash Sale</div>
+                <div class="quick-item">🎂 Bánh kem</div>
+                <div class="quick-item">🍓 Bánh dâu</div>
+                <div class="quick-item">☕ Nước uống</div>
+                <div class="quick-item">🎁 Combo</div>
+                <div class="quick-item">🔥 Giá sốc</div>
+            </div>
+
+            <section class="banner">
+                <div>
+                    <h1>SẢN PHẨM BÁNH NGỌT THIẾT YẾU</h1>
+                    <p>Thêm vào giỏ hoặc mua ngay như web thương mại điện tử.</p>
+                </div>
+                <button onclick="openCart()">Xem giỏ hàng</button>
+            </section>
+
+            <h2 class="section-title">🍰 Danh sách bánh nổi bật</h2>
+            <div id="productGrid" class="product-grid"></div>
+        </main>
+    </div>
+
+    <button class="revenue-floating" onclick="openRevenue()">📊 Xem doanh thu</button>
+
+    <div id="drawerOverlay" class="drawer-overlay" onclick="closeCart()"></div>
+    <aside id="cartDrawer" class="drawer">
+        <div class="drawer-header">
+            <h2>🛒 Giỏ hàng của bạn</h2>
+            <button class="close-btn" onclick="closeCart()">×</button>
+        </div>
+
+        <div id="cartList" class="drawer-body"></div>
+
+        <div class="cart-total">
+            <div class="total-row">
+                <span>Tạm tính:</span>
+                <strong id="totalPrice">0 VND</strong>
+            </div>
+            <div class="total-row">
+                <span>Giảm giá:</span>
+                <strong id="discountPrice">0 VND</strong>
+            </div>
+            <div class="total-row final-row">
+                <span>Cần trả:</span>
+                <span id="finalPrice">0 VND</span>
+            </div>
+
+            <div class="checkout-form">
+                <input id="customerName" type="text" placeholder="Tên khách hàng" />
+                <input id="customerPhone" type="text" placeholder="Số điện thoại" />
+                <button class="checkout-btn" onclick="checkout()">Thanh toán và xuất hóa đơn</button>
+            </div>
+        </div>
+    </aside>
+
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content">
+            <h2>🧾 Hóa đơn thanh toán</h2>
+            <div id="invoiceContent"></div>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="closeInvoice()">Đóng</button>
+                <button class="checkout-btn" style="width:auto;margin:0" onclick="window.print()">In hóa đơn</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="revenueModal" class="modal">
+        <div class="modal-content">
+            <h2>📊 Doanh thu cửa hàng</h2>
+            <div id="revenueContent"></div>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="closeRevenue()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "Bánh tiramisu", price: 45000, quantity: 20, category: "cake", emoji: "🍰" },
+            { id: 2, name: "Bánh mousse chocolate", price: 55000, quantity: 15, category: "cake", emoji: "🍫" },
+            { id: 3, name: "Bánh cheesecake", price: 60000, quantity: 12, category: "cake", emoji: "🧀" },
+            { id: 4, name: "Bánh su kem", price: 12000, quantity: 50, category: "pastry", emoji: "🥐" },
+            { id: 5, name: "Bánh cupcake dâu", price: 30000, quantity: 25, category: "pastry", emoji: "🧁" },
+            { id: 6, name: "Bánh macaron hộp 6 cái", price: 72000, quantity: 18, category: "pastry", emoji: "🍬" },
+            { id: 7, name: "Matcha latte", price: 35000, quantity: 30, category: "drink", emoji: "🍵" },
+            { id: 8, name: "Trà đào cam sả", price: 32000, quantity: 26, category: "drink", emoji: "🍹" },
+            { id: 9, name: "Combo bánh su + trà đào", price: 42000, quantity: 20, category: "combo", emoji: "🎁" },
+            { id: 10, name: "Combo tiramisu + matcha", price: 75000, quantity: 14, category: "combo", emoji: "🔥" },
+            { id: 11, name: "Flash sale cupcake", price: 25000, quantity: 10, category: "hot", emoji: "⚡" },
+            { id: 12, name: "Bánh kem mini dâu", price: 89000, quantity: 8, category: "hot", emoji: "🎂" }
+        ];
+
+        const cart = [];
+        const orders = [];
+        let currentCategory = "all";
+
+        function formatMoney(value) {
+            return value.toLocaleString("vi-VN") + " VND";
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById("productGrid");
+            const searchValue = document.getElementById("searchInput").value.toLowerCase();
+            grid.innerHTML = "";
+
+            const filteredProducts = products.filter(product => {
+                const matchCategory = currentCategory === "all" || product.category === currentCategory;
+                const matchSearch = product.name.toLowerCase().includes(searchValue);
+                return matchCategory && matchSearch;
+            });
+
+            filteredProducts.forEach(product => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-image">${product.emoji}</div>
+                        <div class="product-info">
+                            <h3 class="product-name">${product.name}</h3>
+                            <div class="price">${formatMoney(product.price)}</div>
+                            <div class="stock">Tồn kho: ${product.quantity}</div>
+                            <div class="product-actions">
+                                <button class="add-btn" onclick="addToCart(${product.id}, 1)">Thêm giỏ</button>
+                                <button class="buy-btn" onclick="buyNow(${product.id})">Mua ngay</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function findProduct(productId) {
+            return products.find(product => product.id === productId);
+        }
+
+        function addToCart(productId, amount) {
+            const product = findProduct(productId);
+
+            if (!product) {
+                alert("Không tìm thấy sản phẩm.");
+                return;
+            }
+
+            if (product.quantity < amount) {
+                alert("Sản phẩm đã hết hàng hoặc không đủ số lượng.");
+                return;
+            }
+
+            const cartItem = cart.find(item => item.product.id === productId);
+
+            if (cartItem) {
+                cartItem.amount += amount;
+            } else {
+                cart.push({ product: product, amount: amount });
+            }
+
+            product.quantity -= amount;
+            renderProducts();
+            renderCart();
+        }
+
+        function buyNow(productId) {
+            addToCart(productId, 1);
+            openCart();
+        }
+
+        function increaseCartItem(productId) {
+            addToCart(productId, 1);
+        }
+
+        function decreaseCartItem(productId) {
+            const index = cart.findIndex(item => item.product.id === productId);
+            if (index === -1) return;
+
+            const item = cart[index];
+            item.amount -= 1;
+            item.product.quantity += 1;
+
+            if (item.amount <= 0) {
+                cart.splice(index, 1);
+            }
+
+            renderProducts();
+            renderCart();
+        }
+
+        function removeCartItem(productId) {
+            const index = cart.findIndex(item => item.product.id === productId);
+            if (index === -1) return;
+
+            const item = cart[index];
+            item.product.quantity += item.amount;
+            cart.splice(index, 1);
+
+            renderProducts();
+            renderCart();
+        }
+
+        function calculateTotal() {
+            return cart.reduce((total, item) => total + item.product.price * item.amount, 0);
+        }
+
+        function calculateDiscount(total) {
+            if (total >= 300000) return total * 0.10;
+            if (total >= 150000) return total * 0.05;
+            return 0;
+        }
+
+        function renderCart() {
+            const cartList = document.getElementById("cartList");
+            const cartCount = document.getElementById("cartCount");
+            const totalPrice = document.getElementById("totalPrice");
+            const discountPrice = document.getElementById("discountPrice");
+            const finalPrice = document.getElementById("finalPrice");
+
+            cartList.innerHTML = "";
+            const itemCount = cart.reduce((sum, item) => sum + item.amount, 0);
+            cartCount.textContent = itemCount;
+
+            if (cart.length === 0) {
+                cartList.innerHTML = "<p style='color:#777;font-style:italic'>Giỏ hàng đang trống.</p>";
+            }
+
+            cart.forEach(item => {
+                cartList.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-emoji">${item.product.emoji}</div>
+                        <div>
+                            <div class="cart-name">${item.product.name}</div>
+                            <div>${formatMoney(item.product.price)}</div>
+                            <div class="qty-controls">
+                                <button onclick="decreaseCartItem(${item.product.id})">-</button>
+                                <strong>${item.amount}</strong>
+                                <button onclick="increaseCartItem(${item.product.id})">+</button>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <strong>${formatMoney(item.product.price * item.amount)}</strong><br />
+                            <button class="remove-btn" onclick="removeCartItem(${item.product.id})">Xóa</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const total = calculateTotal();
+            const discount = calculateDiscount(total);
+            const finalTotal = total - discount;
+
+            totalPrice.textContent = formatMoney(total);
+            discountPrice.textContent = formatMoney(discount);
+            finalPrice.textContent = formatMoney(finalTotal);
+        }
+
+        function openCart() {
+            document.getElementById("drawerOverlay").style.display = "block";
+            document.getElementById("cartDrawer").classList.add("open");
+        }
+
+        function closeCart() {
+            document.getElementById("drawerOverlay").style.display = "none";
+            document.getElementById("cartDrawer").classList.remove("open");
+        }
+
+        function checkout() {
+            const customerName = document.getElementById("customerName").value.trim();
+            const customerPhone = document.getElementById("customerPhone").value.trim();
+
+            if (cart.length === 0) {
+                alert("Giỏ hàng đang trống.");
+                return;
+            }
+
+            if (customerName === "" || customerPhone === "") {
+                alert("Vui lòng nhập tên và số điện thoại khách hàng.");
+                return;
+            }
+
+            const total = calculateTotal();
+            const discount = calculateDiscount(total);
+            const finalTotal = total - discount;
+            const orderItems = cart.map(item => ({
+                name: item.product.name,
+                amount: item.amount,
+                price: item.product.price,
+                total: item.product.price * item.amount
+            }));
+
+            const order = {
+                id: orders.length + 1,
+                customerName,
+                customerPhone,
+                items: orderItems,
+                total,
+                discount,
+                finalTotal,
+                createdAt: new Date().toLocaleString("vi-VN")
+            };
+
+            orders.push(order);
+            showInvoice(order);
+            cart.length = 0;
+            document.getElementById("customerName").value = "";
+            document.getElementById("customerPhone").value = "";
+            renderCart();
+            closeCart();
+        }
+
+        function showInvoice(order) {
+            const invoiceContent = document.getElementById("invoiceContent");
+            let itemHtml = "";
+
+            order.items.forEach(item => {
+                itemHtml += `<div class="invoice-line"><span>${item.name} x ${item.amount}</span><strong>${formatMoney(item.total)}</strong></div>`;
+            });
+
+            invoiceContent.innerHTML = `
+                <p><strong>Mã hóa đơn:</strong> #${order.id}</p>
+                <p><strong>Thời gian:</strong> ${order.createdAt}</p>
+                <p><strong>Khách hàng:</strong> ${order.customerName}</p>
+                <p><strong>Số điện thoại:</strong> ${order.customerPhone}</p>
+                <hr style="margin:12px 0" />
+                ${itemHtml}
+                <hr style="margin:12px 0" />
+                <div class="invoice-line"><span>Tạm tính</span><strong>${formatMoney(order.total)}</strong></div>
+                <div class="invoice-line"><span>Giảm giá</span><strong>${formatMoney(order.discount)}</strong></div>
+                <div class="invoice-line final-row"><span>Tổng trả</span><span>${formatMoney(order.finalTotal)}</span></div>
+            `;
+
+            document.getElementById("invoiceModal").style.display = "flex";
+        }
+
+        function closeInvoice() {
+            document.getElementById("invoiceModal").style.display = "none";
+        }
+
+        function openRevenue() {
+            const revenueContent = document.getElementById("revenueContent");
+            const totalRevenue = orders.reduce((sum, order) => sum + order.finalTotal, 0);
+            let orderHtml = "";
+
+            if (orders.length === 0) {
+                orderHtml = "<p>Chưa có đơn hàng nào.</p>";
+            } else {
+                orders.forEach(order => {
+                    orderHtml += `
+                        <div class="invoice-line">
+                            <span>#${order.id} - ${order.customerName}</span>
+                            <strong>${formatMoney(order.finalTotal)}</strong>
+                        </div>
+                    `;
+                });
+            }
+
+            revenueContent.innerHTML = `
+                <p><strong>Số đơn hàng:</strong> ${orders.length}</p>
+                <p><strong>Tổng doanh thu:</strong> ${formatMoney(totalRevenue)}</p>
+                <hr style="margin:12px 0" />
+                ${orderHtml}
+            `;
+
+            document.getElementById("revenueModal").style.display = "flex";
+        }
+
+        function closeRevenue() {
+            document.getElementById("revenueModal").style.display = "none";
+        }
+
+        renderProducts();
+        renderCart();
+    </script>
+</body>
+</html>
